@@ -1,0 +1,367 @@
+{
+  "info": {
+    "_postman_id": "fasttrack-logistics-api",
+    "name": "FastTrack Logistics API",
+    "description": "Backend service for FastTrack logistics company - Shipment synchronization with external carrier API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "shipmentId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the API is running"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shipments",
+      "item": [
+        {
+          "name": "Create Shipment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.id) {",
+                  "        pm.collectionVariables.set('shipmentId', response.data.id);",
+                  "        console.log('Saved shipmentId:', response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORD-2024-001\",\n  \"customerName\": \"John Doe\",\n  \"destination\": \"123 Main Street, New York, NY 10001\",\n  \"status\": \"pending\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shipments?registerWithCarrier=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"],
+              "query": [
+                {
+                  "key": "registerWithCarrier",
+                  "value": "true",
+                  "description": "Register shipment with external carrier API"
+                }
+              ]
+            },
+            "description": "Create a new shipment. The shipment ID will be automatically saved for use in other requests."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Shipment (Without Carrier Registration)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.id) {",
+                  "        pm.collectionVariables.set('shipmentId', response.data.id);",
+                  "        console.log('Saved shipmentId:', response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORD-2024-002\",\n  \"customerName\": \"Jane Smith\",\n  \"destination\": \"456 Oak Avenue, Los Angeles, CA 90001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shipments?registerWithCarrier=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"],
+              "query": [
+                {
+                  "key": "registerWithCarrier",
+                  "value": "false",
+                  "description": "Skip carrier API registration"
+                }
+              ]
+            },
+            "description": "Create a new shipment without registering with the external carrier API"
+          },
+          "response": []
+        },
+        {
+          "name": "List All Shipments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shipments",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"]
+            },
+            "description": "Get a list of all shipments with default pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "List Shipments (With Pagination)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shipments?page=1&limit=20&sortBy=createdAt&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page (max 100)"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc",
+                  "description": "Sort order (asc/desc)"
+                }
+              ]
+            },
+            "description": "Get a paginated list of shipments with custom sorting"
+          },
+          "response": []
+        },
+        {
+          "name": "List Shipments (Filter by Status)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shipments?status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by status: pending, in_transit, delivered, failed"
+                }
+              ]
+            },
+            "description": "Get shipments filtered by status"
+          },
+          "response": []
+        },
+        {
+          "name": "List Shipments (Filter by Customer)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shipments?customerName=John",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments"],
+              "query": [
+                {
+                  "key": "customerName",
+                  "value": "John",
+                  "description": "Filter by customer name (partial match)"
+                }
+              ]
+            },
+            "description": "Get shipments filtered by customer name"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Shipment by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shipments/{{shipmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "{{shipmentId}}"]
+            },
+            "description": "Get a specific shipment by its UUID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Shipment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"John Doe Updated\",\n  \"status\": \"in_transit\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shipments/{{shipmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "{{shipmentId}}"]
+            },
+            "description": "Update an existing shipment's details"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Shipment Status to Delivered",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shipments/{{shipmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "{{shipmentId}}"]
+            },
+            "description": "Mark a shipment as delivered"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Shipment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shipments/{{shipmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["shipments", "{{shipmentId}}"]
+            },
+            "description": "Delete a shipment by its UUID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sync",
+      "item": [
+        {
+          "name": "Trigger Full Sync",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync"]
+            },
+            "description": "Trigger manual synchronization with the external carrier API for all pending/in-transit shipments"
+          },
+          "response": []
+        },
+        {
+          "name": "Sync Single Shipment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync?shipmentId={{shipmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync"],
+              "query": [
+                {
+                  "key": "shipmentId",
+                  "value": "{{shipmentId}}",
+                  "description": "Sync a specific shipment only"
+                }
+              ]
+            },
+            "description": "Sync a specific shipment with the carrier API"
+          },
+          "response": []
+        },
+        {
+          "name": "Force Sync All Shipments",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync?forceSync=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync"],
+              "query": [
+                {
+                  "key": "forceSync",
+                  "value": "true",
+                  "description": "Force sync all shipments regardless of last sync time"
+                }
+              ]
+            },
+            "description": "Force synchronization for all shipments"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
