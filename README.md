@@ -1,6 +1,6 @@
 # FastTrack Logistics API
 
-A robust Node.js backend service for synchronizing shipment data between an internal database and an external carrier API. Built with Express, MongoDB, and TypeScript following MVC architecture.
+A  Node.js backend service for synchronizing shipment data between an internal database and an external carrier API. Built with Express, MongoDB, and TypeScript following MVC architecture.
 
 ## 🚀 Features
 
@@ -26,7 +26,7 @@ A robust Node.js backend service for synchronizing shipment data between an inte
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd uae-assignment
+   cd assessment
    ```
 
 2. **Install dependencies**
@@ -43,7 +43,7 @@ A robust Node.js backend service for synchronizing shipment data between an inte
    ```env
    PORT=3000
    NODE_ENV=development
-   MONGODB_URI=mongodb://localhost:27017/fasttrack
+   MONGODB_URI=mongodb+srv://itsgeekyyashaswi:admin@cluster0.n8f96lb.mongodb.net/fasttrack
    CARRIER_API_BASE_URL=http://localhost:3001
    CARRIER_API_TIMEOUT=5000
    SYNC_INTERVAL_CRON=*/5 * * * *
